@@ -236,6 +236,7 @@ include /etc/sway/config.d/*
 
 # Custom changes
 input "type:touchpad" {
+  tap enabled
   natural_scroll enabled
 }
 
