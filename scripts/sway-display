@@ -1,0 +1,56 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+LAPTOP="eDP-1"
+EXTERNAL="DP-1"
+LAPTOP_WIDTH=1920
+
+STATE_FILE="${XDG_CACHE_HOME:-$HOME/.cache}/sway-display-state"
+modes=(mirror extend external laptop)
+
+action="${1:-apply}"
+
+# default state
+current="$(cat "$STATE_FILE" 2>/dev/null || echo mirror)"
+next="$current"
+
+if [[ "$action" == "cycle" ]]; then
+  for i in "${!modes[@]}"; do
+    if [[ "${modes[i]}" == "$current" ]]; then
+      next="${modes[(i + 1) % ${#modes[@]}]}"
+      break
+    fi
+  done
+  echo "$next" >"$STATE_FILE"
+fi
+
+mode="$next"
+
+# baseline = mirror
+res="mode 1920x1080"
+l_cmd="enable $res position 0 0"
+e_cmd="enable $res position 0 0"
+
+case "$mode" in
+extend)
+  e_cmd="enable $res position ${LAPTOP_WIDTH} 0"
+  ;;
+external)
+  l_cmd="disable"
+  ;;
+laptop)
+  e_cmd="disable"
+  ;;
+mirror)
+  : # baseline already correct
+  ;;
+*)
+  echo "Unknown mode: $mode" >&2
+  exit 1
+  ;;
+esac
+
+swaymsg -q "
+  output $LAPTOP $l_cmd
+  output $EXTERNAL $e_cmd
+"

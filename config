@@ -234,7 +234,8 @@ bar {
 
 include /etc/sway/config.d/*
 
-# Custom changes
+###### Custom config
+set $scripts ~/.config/sway/scripts
 input "type:touchpad" {
   tap enabled
   natural_scroll enabled
@@ -246,3 +247,23 @@ input type:keyboard {
     # xkb_options grp:alt_shift_toggle
 }
 bindsym $mod+space input type:keyboard xkb_switch_layout next
+
+output * bg wallpaper.jpg fill
+bindsym $mod+F7 exec $scripts/sway-display cycle
+bindsym $mod+F8 exec $scripts/sway-display apply
+bindsym $mod+shift+v exec pavucontrol
+exec_always $scripts/sway-display apply
+exec_always --no-startup-id nm-applet --indicator
+
+exec_always {
+    systemctl --user import-environment WAYLAND_DISPLAY XDG_CURRENT_DESKTOP=sway
+    systemctl --user restart xdg-desktop-portal xdg-desktop-portal-wlr
+}
+
+bindsym XF86AudioPlay exec playerctl play-pause
+bindsym XF86AudioNext exec playerctl next
+bindsym XF86AudioPrev exec playerctl previous
+
+set $alt_menu wofi --show drun -i | xargs swaymsg exec
+bindsym $mod+shift+d exec $alt_menu
+bindsym $mod+x kill
