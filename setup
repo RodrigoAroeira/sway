@@ -1,0 +1,49 @@
+#!/usr/bin/env bash
+
+needed_apps=(wpctl blueman network-manager-gnome pavucontrol waybar wofi xdg-desktop-portal-wlr grim slurp playerctl)
+
+case "$1" in
+install | remove)
+  action="$1"
+  ;;
+*)
+  echo "Usage: $0 [install | remove]" >&2
+  exit 1
+  ;;
+esac
+
+package_exists() {
+  local pkg="$1"
+  dpkg-query -W -f='${Status}' "$pkg" 2>/dev/null | grep -q "install ok installed"
+}
+
+# Used for not accidentaly apt-marking existing stuff as manual
+not_existing=()
+for pkg in "${needed_apps[@]}"; do
+  if ! package_exists "$pkg"; then
+    not_existing+=("$pkg")
+  fi
+done
+
+if [[ "$action" == "install" ]]; then
+  if ((${#not_existing[@]} == 0)); then
+    echo "Everything needed is already installed."
+    exit 0
+  fi
+  targets=("${not_existing[@]}")
+else
+  # Simply use everything if remove
+  targets=("${needed_apps[@]}")
+fi
+
+echo "The following packages will be ${action}ed: ${targets[*]}"
+read -p "Proceed? [Y/n] " ans
+ans=${ans,,}
+
+if [[ -z "$ans" || "$ans" =~ ^y(es)?$ ]]; then
+
+  sudo apt-get "$action" -y "${targets[@]}"
+else
+  echo "Aborted."
+  exit 1
+fi
