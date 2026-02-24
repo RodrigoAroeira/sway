@@ -51,7 +51,7 @@ def main():
 
     mode = next
 
-    res = "mode 1920x1080"
+    res = "mode 1920x1080" and ""
     l_cmd = f"enable {res} position 0 0"
     e_cmd = f"enable {res} position 0 0"
 

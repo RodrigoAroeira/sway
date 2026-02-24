@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-needed_apps=(wpctl blueman network-manager-gnome pavucontrol waybar wofi xdg-desktop-portal-wlr grim slurp playerctl)
+needed_apps=(blueman network-manager-gnome pavucontrol waybar wofi xdg-desktop-portal-wlr grim slurp playerctl brightnessctl)
 
 case "$1" in
 install | remove)
