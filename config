@@ -8,13 +8,14 @@
 #
 # Logo key. Use Mod1 for Alt.
 set $mod Mod4
+set $alt Mod1
 # Home row direction keys, like vim
 set $left h
 set $down j
 set $up k
 set $right l
 # Your preferred terminal emulator
-set $term ptyxis --new-window
+set $term ~/.cargo/bin/alacritty
 # Your preferred application launcher
 set $menu wmenu-run
 
@@ -158,7 +159,7 @@ include /etc/sway/config-vars.d/*
     bindsym $mod+Shift+space floating toggle
 
     # Swap focus between the tiling area and the floating area
-    # bindsym $mod+space focus mode_toggle
+    bindsym $mod+space focus mode_toggle
 
     # Move focus to the parent container
     bindsym $mod+a focus parent
@@ -235,7 +236,8 @@ bar {
 include /etc/sway/config.d/*
 
 ###### Custom config
-set $scripts ~/.config/sway/scripts
+set $dir ~/.config/sway
+set $scripts $dir/scripts
 input "type:touchpad" {
   tap enabled
   natural_scroll enabled
@@ -246,11 +248,11 @@ input type:keyboard {
     xkb_variant ,intl
     # xkb_options grp:alt_shift_toggle
 }
-bindsym $mod+space input type:keyboard xkb_switch_layout next
+bindsym $alt+space input type:keyboard xkb_switch_layout next
 
 output * bg wallpaper.jpg fill
-bindsym $mod+F7 exec $scripts/sway-display cycle
-bindsym $mod+F8 exec $scripts/sway-display apply
+bindsym $mod+F7 exec $scripts/sway-display.py cycle
+bindsym $mod+F8 exec $scripts/sway-display.py apply
 bindsym $mod+shift+v exec pavucontrol
 exec_always $scripts/sway-display apply
 exec_always --no-startup-id nm-applet --indicator
@@ -267,3 +269,25 @@ bindsym XF86AudioPrev exec playerctl previous
 set $alt_menu wofi --show drun -i | xargs swaymsg exec
 bindsym $mod+shift+d exec $alt_menu
 bindsym $mod+x kill
+
+bindsym ctrl+$alt+t exec $term
+
+bindsym $mod+ctrl+w exec swaymsg output "*" bg $dir/wallpaper.jpg fill
+
+bindsym $mod+shift+Return exec $term -e nvim $dir
+
+set $laptop eDP-1
+set $external DP-1
+exec {
+    workspace 1 output $laptop
+    workspace 2 output $external
+}
+
+bindsym $mod+$alt+Return exec $term -e ssh pi@192.168.0.12
+bindsym $mod+$alt+d exec discord
+bindsym $mod+$alt+f exec firefox
+bindsym $mod+$alt+s exec spotify
+
+gaps inner 8
+gaps outer 3
+default_border pixel 2
